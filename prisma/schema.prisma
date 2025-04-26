@@ -1,0 +1,96 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+  directUrl = env("DIRECT_URL")
+}
+
+model User {
+  id          String       @id @default(uuid())
+  staffNumber String       @unique
+  name        String
+  email       String       @unique
+  password    String
+  image       String?
+  position    String
+  role        Role         @default(User)
+  isDeleted   Boolean      @default(false)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  attendances Attendance[]
+  leaves      Leave[]
+}
+
+model Information {
+  id            String   @id @default(uuid())
+  startTime     String // Time for starting work (e.g., "07:00")
+  endTime       String // Deadline for check-in before considered late (e.g., "08:00")
+  dismissalTime String // Time when employees can check-out (e.g., "15:00")
+  maxWorkLeave  Int // Maximum number of vacation days allowed
+  maxSickLeave  Int // Maximum number of sick days allowed
+  qrCode        String // QR code for attendance
+  createdAt     DateTime @default(now())
+  updatedAt     DateTime @updatedAt
+}
+
+model Attendance {
+  id        String           @id @default(uuid())
+  userId    String
+  user      User             @relation(fields: [userId], references: [id])
+  time      DateTime
+  type      AttendanceType
+  lateTime  Int              @default(0) // Late time in minutes
+  status    AttendanceStatus
+  createdAt DateTime         @default(now())
+  updatedAt DateTime         @updatedAt
+}
+
+model Leave {
+  id         String      @id @default(uuid())
+  userId     String
+  user       User        @relation(fields: [userId], references: [id])
+  reason     String
+  attachment String?
+  type       LeaveType
+  date       DateTime
+  status     LeaveStatus @default(Pending)
+  createdAt  DateTime    @default(now())
+  updatedAt  DateTime    @updatedAt
+}
+
+enum Role {
+  Admin
+  User
+}
+
+enum AttendanceType {
+  Masuk
+  Keluar
+}
+
+enum AttendanceStatus {
+  Hadir
+  Ijin
+  Sakit
+  Telat
+}
+
+enum LeaveType {
+  Cuti
+  Sakit
+}
+
+enum LeaveStatus {
+  Pending
+  Diterima
+  Ditolak
+}
