@@ -95,8 +95,11 @@ const makeAttendance = async (
     }
     let type: AttendanceType = AttendanceType.Masuk;
     let status: AttendanceStatus = AttendanceStatus.Hadir;
-    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+    const now = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    );
     now.setHours(now.getHours() + 7);
+    console.log("Current time:", now);
     const informations = await db.information.findFirst({
       where: {
         qrCode: qrCode,
@@ -116,6 +119,8 @@ const makeAttendance = async (
       10
     );
 
+    console.log("Start time hour:", startTimeHour);
+    console.log("Now get hours:", now.getHours());
     if (now.getHours() < startTimeHour) {
       return res.status(400).json({
         message: "Belum waktunya absen masuk",
@@ -156,7 +161,7 @@ const makeAttendance = async (
         message: "Anda sudah absen " + type.toLowerCase(),
       });
     }
-    
+
     // Create the attendance record
     const attendance = await db.attendance.create({
       data: {
