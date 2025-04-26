@@ -138,6 +138,20 @@ const makeAttendance = async (
       status = AttendanceStatus.Hadir;
     }
 
+    const gte = new Date(
+      new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }))
+    );
+
+    gte.setHours(0, 0, 0, 0);
+
+    const lte = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    );
+    lte.setHours(23, 59, 59, 999);
+
+    console.log("gte: ", gte);
+    console.log("lte: ", lte);
+
     const checkAttendance = await db.attendance.findFirst({
       where: {
         AND: [
@@ -149,8 +163,11 @@ const makeAttendance = async (
           },
           {
             time: {
-              gte: new Date(new Date().setDate(new Date().getDate() - 1)),
-              lte: new Date(new Date().setDate(new Date().getDate() + 1)),
+              gte: gte,
+              lte: lte,
+              // gte: new Date(new Date().setDate(new Date().getDate() - 1)),
+              // lte: new Date(new Date().setDate(new Date().getDate() + 1)),
+              /*******  a32bc696-3f37-467a-a289-9fc46f7eedaf  *******/
             },
           },
         ],
