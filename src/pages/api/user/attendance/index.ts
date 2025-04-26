@@ -184,7 +184,7 @@ const makeAttendance = async (
         userId: userId,
         type: type,
         status: status,
-        time: now.toISOString(),
+        time: now,
       },
     });
 

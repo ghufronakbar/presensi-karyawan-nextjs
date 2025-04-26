@@ -21,7 +21,7 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
   try {
     // Get user ID from token
     const userId = req.decoded?.id;
-    
+
     if (!userId) {
       return res.status(401).json({
         status: "error",
@@ -85,23 +85,16 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       },
     });
 
-    // Count today's attendance
-    const today = new Date();
     const startOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate()
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
     );
+    startOfDay.setHours(0, 0, 0, 0);
     const endOfDay = new Date(
-      today.getFullYear(),
-      today.getMonth(),
-      today.getDate(),
-      23,
-      59,
-      59
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
     );
+    endOfDay.setHours(23, 59, 59, 999);
 
-    const hasTodayAttendance = await db.attendance.findFirst({
+    const attendanceToday = await db.attendance.findMany({
       where: {
         userId: userId,
         time: {
@@ -110,6 +103,14 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
         },
       },
     });
+
+    const todayMasuk = attendanceToday.find(
+      (attendance) => attendance.type === AttendanceType.Masuk
+    );
+
+    const todayKeluar = attendanceToday.find(
+      (attendance) => attendance.type === AttendanceType.Keluar
+    );
 
     // Count leaves by type
     const currentYear = new Date().getFullYear();
@@ -167,7 +168,18 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
       user: user,
       attendance: {
         monthlyTotal: totalAttendances,
-        hasTodayAttendance: !!hasTodayAttendance,
+        attendanceMasuk: todayMasuk?.time
+          ? new Date(todayMasuk.time).toLocaleTimeString("id-ID", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : null,
+        attendanceKeluar: todayKeluar?.time
+          ? new Date(todayKeluar.time).toLocaleTimeString("id-ID", {
+              hour: "2-digit",
+              minute: "2-digit",
+            })
+          : null,
         lateCount: lateAttendances,
       },
       leave: {
