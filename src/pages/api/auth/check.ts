@@ -11,7 +11,12 @@ const handler = async (req: NextApiRequest, res: NextApiResponse) => {
     if (!user || user.isDeleted) {
       return res.status(401).json({ message: "Token tidak valid" });
     }
-    return res.status(200).json({ message: "Token valid", data: user });
+    return res
+      .status(200)
+      .json({
+        message: "Token valid",
+        data: { ...user, token: req.headers?.authorization?.split(" ")[1] },
+      });
   } catch (error) {
     console.log(error);
     return res.status(500).json({ message: "Terjadi kesalahan sistem" });
