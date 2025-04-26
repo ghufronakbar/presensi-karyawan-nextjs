@@ -98,7 +98,7 @@ const makeAttendance = async (
     const now = new Date(
       new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
     );
-    now.setHours(now.getHours() + 7);
+    // now.setHours(now.getHours() + 7);
     console.log("Current time:", now);
     const informations = await db.information.findFirst({
       where: {
