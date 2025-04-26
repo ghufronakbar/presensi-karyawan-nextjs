@@ -95,7 +95,8 @@ const makeAttendance = async (
     }
     let type: AttendanceType = AttendanceType.Masuk;
     let status: AttendanceStatus = AttendanceStatus.Hadir;
-    const now = new Date();
+    const now = new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }));
+    now.setHours(now.getHours() + 7);
     const informations = await db.information.findFirst({
       where: {
         qrCode: qrCode,
