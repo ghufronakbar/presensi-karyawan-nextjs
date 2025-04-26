@@ -100,6 +100,19 @@ const makeAttendance = async (
     );
     // now.setHours(now.getHours() + 7);
     console.log("Current time:", now);
+    const gte = new Date(
+      new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }))
+    );
+
+    gte.setHours(0, 0, 0, 0);
+
+    const lte = new Date(
+      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
+    );
+    lte.setHours(23, 59, 59, 999);
+
+    console.log("gte: ", gte);
+    console.log("lte: ", lte);
     const informations = await db.information.findFirst({
       where: {
         qrCode: qrCode,
@@ -137,20 +150,6 @@ const makeAttendance = async (
       type = AttendanceType.Keluar;
       status = AttendanceStatus.Hadir;
     }
-
-    const gte = new Date(
-      new Date(new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" }))
-    );
-
-    gte.setHours(0, 0, 0, 0);
-
-    const lte = new Date(
-      new Date().toLocaleString("en-US", { timeZone: "Asia/Jakarta" })
-    );
-    lte.setHours(23, 59, 59, 999);
-
-    console.log("gte: ", gte);
-    console.log("lte: ", lte);
 
     const checkAttendance = await db.attendance.findFirst({
       where: {
